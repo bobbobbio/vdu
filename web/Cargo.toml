@@ -1,0 +1,32 @@
+[package]
+name = "vdu_web"
+version = "0.1.0"
+authors = ["Remi Bernotavicius <remi@abort.cc>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+vdu_path_tree = { version = "*", path = "../library/vdu_path_tree" }
+console_error_panic_hook = "*"
+wasm-bindgen = { version = "*", features = ["serde-serialize"] }
+wasm-bindgen-futures = "*"
+js-sys = "*"
+serde = { version = "*", features = ["derive"] }
+
+[dependencies.web-sys]
+version = "*"
+features = [
+  "CanvasRenderingContext2d",
+  "Document",
+  "EventTarget",
+  "Headers",
+  "HtmlCanvasElement",
+  "MouseEvent",
+  "Request",
+  "RequestInit",
+  "RequestMode",
+  "Response",
+  "Window",
+]

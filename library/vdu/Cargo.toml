@@ -1,0 +1,15 @@
+[package]
+name = "vdu"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+bytesize = "*"
+http_io = "^0.2.10"
+indicatif = "*"
+log = "*"
+num-format = "*"
+serde_json = "*"
+tar = "*"
+vdu_path_tree = { version = "*", path = "../vdu_path_tree" }
+walkdir = "*"

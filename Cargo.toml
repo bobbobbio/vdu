@@ -1,0 +1,13 @@
+[profile.release]
+opt-level = 3
+debug = true
+lto = "thin"
+panic = "abort"
+
+[workspace]
+members = [
+    "library/vdu",
+    "library/vdu_path_tree",
+    "cli",
+    "web",
+]

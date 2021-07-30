@@ -1,0 +1,12 @@
+[package]
+name = "vdu_path_tree"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+bytesize = "*"
+indicatif = "*"
+log = "*"
+num-format = "*"
+walkdir = "*"
+serde = { version = "*", features = ["derive"] }
