@@ -8,12 +8,13 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-vdu_path_tree = { version = "*", path = "../library/vdu_path_tree" }
+bincode = "*"
 console_error_panic_hook = "*"
-wasm-bindgen = { version = "*", features = ["serde-serialize"] }
-wasm-bindgen-futures = "*"
 js-sys = "*"
 serde = { version = "*", features = ["derive"] }
+vdu_path_tree = { version = "*", path = "../library/vdu_path_tree" }
+wasm-bindgen = { version = "*" }
+wasm-bindgen-futures = "*"
 
 [dependencies.web-sys]
 version = "*"

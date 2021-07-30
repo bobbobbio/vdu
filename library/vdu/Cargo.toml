@@ -9,7 +9,7 @@ http_io = "^0.2.10"
 indicatif = "*"
 log = "*"
 num-format = "*"
-serde_json = "*"
+bincode = "*"
 tar = "*"
 vdu_path_tree = { version = "*", path = "../vdu_path_tree" }
 walkdir = "*"

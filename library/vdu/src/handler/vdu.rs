@@ -24,10 +24,10 @@ impl VduHandler {
     }
 
     fn get_tree(&self) -> HttpResponse<Box<dyn io::Read>> {
-        let data = serde_json::to_vec(&self.tree).unwrap();
+        let data = bincode::serialize(&self.tree).unwrap();
         let body: Box<dyn io::Read> = Box::new(io::Cursor::new(data));
         let mut response = HttpResponse::new(HttpStatus::OK, body);
-        response.add_header("Content-Type", "application/json");
+        response.add_header("Content-Type", "application/octet-stream");
         response
     }
 }

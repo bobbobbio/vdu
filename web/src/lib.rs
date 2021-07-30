@@ -29,7 +29,6 @@ fn canvas() -> web_sys::HtmlCanvasElement {
     let canvas = document.get_element_by_id("canvas").unwrap();
     canvas
         .dyn_into::<web_sys::HtmlCanvasElement>()
-        .map_err(|_| ())
         .unwrap()
 }
 
@@ -51,15 +50,16 @@ async fn load_path_tree() -> Result<PathTree, JsValue> {
 
     request
         .headers()
-        .set("Accept", "application/json")?;
+        .set("Accept", "application/octet-stream")?;
 
     let window = window();
     let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
 
     let resp: Response = resp_value.dyn_into().unwrap();
-    let json = JsFuture::from(resp.json()?).await?;
-
-    Ok(json.into_serde().unwrap())
+    let value = JsFuture::from(resp.array_buffer()?).await?;
+    let array = js_sys::Uint8Array::new(&value);
+    let buffer = array.to_vec();
+    Ok(bincode::deserialize(&buffer[..]).unwrap())
 }
 
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
