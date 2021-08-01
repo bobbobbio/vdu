@@ -8,6 +8,12 @@ use structopt::StructOpt;
 struct Opt {
     #[structopt(parse(from_os_str))]
     path: PathBuf,
+
+    #[structopt(long)]
+    do_not_open_browser: bool,
+
+    #[structopt(long, default_value = "localhost")]
+    host: String,
 }
 
 fn main() -> io::Result<()> {
@@ -16,13 +22,16 @@ fn main() -> io::Result<()> {
     let opt = Opt::from_args();
     let tree = vdu::build_tree_from_path(&opt.path)?;
 
-    let socket = net::TcpListener::bind("127.0.0.1:0")?;
+    let socket = net::TcpListener::bind(&format!("{}:0", opt.host))?;
     let port = socket.local_addr()?.port();
 
-    let url = format!("http://127.0.0.1:{}/", port);
-    log::info!("opening {}", url);
+    let url = format!("http://{}:{}/", opt.host, port);
+    log::info!("visit {} to see results", url);
 
-    webbrowser::open(&url).unwrap();
+    if !opt.do_not_open_browser {
+        log::info!("opening browser");
+        webbrowser::open(&url).unwrap();
+    }
 
     vdu::run_server(tree, socket)
 }
