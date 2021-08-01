@@ -5,7 +5,7 @@ edition = "2018"
 
 [dependencies]
 bytesize = "*"
-http_io = "^0.2.10"
+http_io = { version = "^0.2.10", default-features = false, features = ["std"]}
 indicatif = "*"
 log = "*"
 num-format = "*"
