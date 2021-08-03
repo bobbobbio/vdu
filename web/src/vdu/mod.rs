@@ -1,6 +1,8 @@
 // copyright 2021 Remi Bernotavicius
 
 use colors::COLOR_NAMES;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use vdu_path_tree::{PathTree, PathTreeNode};
 use wasm_bindgen::prelude::*;
 
@@ -57,8 +59,25 @@ impl Rectangle {
     }
 }
 
-fn colors<'a>() -> impl Iterator<Item = &'a str> {
-    COLOR_NAMES.iter().map(|&s| s).cycle()
+/// chooses a color based on the hash of the input
+fn color<T: Hash>(t: T) -> &'static str {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    COLOR_NAMES[(s.finish() as usize) % COLOR_NAMES.len()]
+}
+
+#[test]
+fn color_same_for_same_input() {
+    let color1 = color(1);
+    let color2 = color(1);
+    assert_eq!(color1, color2);
+}
+
+#[test]
+fn color_different_for_different_input() {
+    let color1 = color(1);
+    let color2 = color(2);
+    assert_ne!(color1, color2);
 }
 
 pub struct Vdu {
@@ -137,13 +156,12 @@ impl Vdu {
         rect: Rectangle,
         path: &str,
         iter: impl Iterator<Item = (&'a str, &'a PathTreeNode)>,
-        color: &mut impl Iterator<Item = &'a str>,
         selected: &mut Option<String>,
     ) {
         let children: Vec<_> = iter.collect();
         if children.is_empty() || rect.area() < 10_000.0 {
             self.drawing_context
-                .set_fill_style(&JsValue::from_str(color.next().unwrap()));
+                .set_fill_style(&JsValue::from_str(color(path)));
             self.drawing_context
                 .fill_rect(rect.x, rect.y, rect.width, rect.height);
             if rect.contains(self.mouse_pos.0, self.mouse_pos.1) {
@@ -156,7 +174,7 @@ impl Vdu {
         } else {
             for (new_rect, (name, node)) in divide(rect, children, Direction::Vertical) {
                 let path = format!("{}/{}", path, name);
-                self.render_helper(new_rect, &path, node.children(), color, selected);
+                self.render_helper(new_rect, &path, node.children(), selected);
             }
         }
     }
@@ -174,13 +192,7 @@ impl Vdu {
             width: self.width() as f64,
             height: self.height() as f64 - 20.0,
         };
-        self.render_helper(
-            starting_rect,
-            "",
-            self.tree.children(),
-            &mut colors(),
-            &mut selected,
-        );
+        self.render_helper(starting_rect, "", self.tree.children(), &mut selected);
 
         if let Some(selected) = selected {
             self.drawing_context
